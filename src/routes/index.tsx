@@ -2,7 +2,6 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Menu, Search, ShoppingCart, ArrowRight, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import heroAquarium from "@/assets/hero-aquarium.jpg";
 import productShrimp from "@/assets/product-shrimp.jpg";
 import productRotala from "@/assets/product-rotala.jpg";
@@ -87,6 +86,7 @@ const learningTopics = [
 
 function Index() {
   const [visibleArrivals, setVisibleArrivals] = useState(4);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/30">
@@ -122,24 +122,28 @@ function Index() {
             { title: "Learning Center", links: ["Beginner Guides", "Advanced Aquascaping", "Water Chemistry"] },
             { title: "Policies", links: ["Shipping", "Returns", "Live Arrival Guarantee"] }
           ].map((item) => (
-            <HoverCard key={item.title} openDelay={150} closeDelay={150}>
-              <HoverCardTrigger asChild>
-                <a href={`#${item.title.toLowerCase().replace(/ /g, '-')}`} className="text-xs font-medium uppercase tracking-widest hover:text-primary transition-colors cursor-pointer">
-                  {item.title}
-                </a>
-              </HoverCardTrigger>
-              <HoverCardContent align="start" className="w-48 p-2 bg-background border border-border shadow-md">
-                <ul className="flex flex-col">
+            <div key={item.title} className="relative group">
+              <a
+                href={`#${item.title.toLowerCase().replace(/ /g, '-')}`}
+                className="text-xs font-medium uppercase tracking-widest hover:text-primary transition-colors cursor-pointer"
+              >
+                {item.title}
+              </a>
+              <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-150 absolute top-full left-0 pt-2 z-50">
+                <ul className="w-48 p-2 bg-background border border-border shadow-md rounded-md flex flex-col">
                   {item.links.map((link) => (
                     <li key={link}>
-                      <a href={`#${item.title.toLowerCase().replace(/ /g, '-')}`} className="block select-none space-y-1 rounded-md px-3 py-2 text-sm leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
+                      <a
+                        href={`#${item.title.toLowerCase().replace(/ /g, '-')}`}
+                        className="block select-none rounded-md px-3 py-2 text-sm leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
+                      >
                         {link}
                       </a>
                     </li>
                   ))}
                 </ul>
-              </HoverCardContent>
-            </HoverCard>
+              </div>
+            </div>
           ))}
         </div>
         <div className="flex items-center gap-4 shrink-0">
@@ -175,53 +179,79 @@ function Index() {
                     <SheetClose className="text-white/80 hover:text-white transition-colors">
                       <X className="w-6 h-6 stroke-[1.5]" />
                     </SheetClose>
-                    <Search className="w-6 h-6 text-white/80 stroke-[1.5]" />
+                    <button
+                      aria-label="Toggle search"
+                      onClick={() => setMobileSearchOpen((v) => !v)}
+                      className={`transition-colors ${mobileSearchOpen ? "text-white" : "text-white/80 hover:text-white"}`}
+                    >
+                      <Search className="w-6 h-6 stroke-[1.5]" />
+                    </button>
                   </div>
-                  <div className="bg-white px-3 py-1 rounded text-black font-bold text-sm tracking-tight flex items-center gap-1">
-                    <div className="w-4 h-4 bg-black rounded-full flex items-center justify-center">
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22 12C22 12 19 16 12 16C5 16 2 12 2 12C2 12 5 8 12 8C19 8 22 12 22 12Z" />
-                      </svg>
-                    </div>
-                    best<span className="text-purple-800">4</span>pets
+                  <div className=" px-3 py-1 rounded text-white font-bold text-sm tracking-tight flex items-center gap-1">
+
+                    <div className="text-2xl font-display italic tracking-tight truncate hover:cursor-pointer">Best4Pets</div>
+
                   </div>
 
                   <ShoppingCart className="w-6 h-6 text-white/80 stroke-[1.5]" />
                 </div>
 
+                {/* Mobile Search Box */}
+                <div
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${mobileSearchOpen ? "max-h-20 opacity-100" : "max-h-0 opacity-0"
+                    } border-b border-white/10`}
+                >
+                  <div className="px-4 py-3 flex items-center gap-3">
+                    <Search className="w-4 h-4 text-white/50 shrink-0" />
+                    <input
+                      autoFocus={mobileSearchOpen}
+                      type="text"
+                      placeholder="Search products..."
+                      className="flex-1 bg-transparent text-white placeholder:text-white/40 text-sm outline-none"
+                    />
+                    <button
+                      aria-label="Close search"
+                      onClick={() => setMobileSearchOpen(false)}
+                      className="text-white/50 hover:text-white transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
                 {/* Menu Items */}
-                <div className="flex flex-col px-6 py-2 overflow-y-auto">
-                  <a href="#" className="flex items-center justify-between py-4 text-lg font-medium text-green-600 hover:text-white/80 transition-colors">
+                <div className="flex flex-col px-4 py-2 overflow-y-auto">
+                  <a href="#" className="flex items-center justify-between px-3 py-4 text-lg font-medium text-green-500 rounded-lg transition-all duration-150 hover:bg-white/10 hover:text-white active:bg-white/20 active:text-white border-b border-white/5">
                     Sale 🔥
                   </a>
-                  <a href="#" className="flex items-center justify-between py-4 text-lg font-medium text-green-600 hover:text-white/80 transition-colors">
+                  <a href="#" className="flex items-center justify-between px-3 py-4 text-lg font-medium text-green-500 rounded-lg transition-all duration-150 hover:bg-white/10 hover:text-white active:bg-white/20 active:text-white border-b border-white/5">
                     Combo
                     <ArrowRight className="w-5 h-5 text-white/60 stroke-[1.5]" />
                   </a>
-                  <a href="#livestock" className="flex items-center justify-between py-4 text-lg font-medium text-green-600 hover:text-white/80 transition-colors">
+                  <a href="#livestock" className="flex items-center justify-between px-3 py-4 text-lg font-medium text-green-500 rounded-lg transition-all duration-150 hover:bg-white/10 hover:text-white active:bg-white/20 active:text-white border-b border-white/5">
                     Fish
                     <ArrowRight className="w-5 h-5 text-white/60 stroke-[1.5]" />
                   </a>
-                  <a href="#aquascaping" className="flex items-center justify-between py-4 text-lg font-medium text-green-600 hover:text-white/80 transition-colors">
-                    Shrimps & Crabs
+                  <a href="#aquascaping" className="flex items-center justify-between px-3 py-4 text-lg font-medium text-green-500 rounded-lg transition-all duration-150 hover:bg-white/10 hover:text-white active:bg-white/20 active:text-white border-b border-white/5">
+                    Shrimps &amp; Crabs
                     <ArrowRight className="w-5 h-5 text-white/60 stroke-[1.5]" />
                   </a>
-                  <a href="#equipment" className="flex items-center justify-between py-4 text-lg font-medium text-green-600 hover:text-white/80 transition-colors">
+                  <a href="#equipment" className="flex items-center justify-between px-3 py-4 text-lg font-medium text-green-500 rounded-lg transition-all duration-150 hover:bg-white/10 hover:text-white active:bg-white/20 active:text-white border-b border-white/5">
                     Aquarium Plants
                     <ArrowRight className="w-5 h-5 text-white/60 stroke-[1.5]" />
                   </a>
-                  <a href="#learning" className="flex items-center justify-between py-4 text-lg font-medium text-green-600 hover:text-white/80 transition-colors">
+                  <a href="#learning" className="flex items-center justify-between px-3 py-4 text-lg font-medium text-green-500 rounded-lg transition-all duration-150 hover:bg-white/10 hover:text-white active:bg-white/20 active:text-white border-b border-white/5">
                     Terrarium
                     <ArrowRight className="w-5 h-5 text-white/60 stroke-[1.5]" />
                   </a>
-                  <a href="#learning" className="flex items-center justify-between py-4 text-lg font-medium text-green-600 hover:text-white/80 transition-colors">
+                  <a href="#learning" className="flex items-center justify-between px-3 py-4 text-lg font-medium text-green-500 rounded-lg transition-all duration-150 hover:bg-white/10 hover:text-white active:bg-white/20 active:text-white border-b border-white/5">
                     Accessories
                     <ArrowRight className="w-5 h-5 text-white/60 stroke-[1.5]" />
                   </a>
-                  <a href="#learning" className="flex items-center justify-between py-4 text-lg font-medium text-green-600 hover:text-white/80 transition-colors">
+                  <a href="#learning" className="flex items-center justify-between px-3 py-4 text-lg font-medium text-green-500 rounded-lg transition-all duration-150 hover:bg-white/10 hover:text-white active:bg-white/20 active:text-white border-b border-white/5">
                     Learning Centre
                   </a>
-                  <a href="#learning" className="flex items-center justify-between py-4 text-lg font-medium text-green-600 hover:text-white/80 transition-colors">
+                  <a href="#learning" className="flex items-center justify-between px-3 py-4 text-lg font-medium text-green-500 rounded-lg transition-all duration-150 hover:bg-white/10 hover:text-white active:bg-white/20 active:text-white">
                     Policies
                     <ArrowRight className="w-5 h-5 text-white/60 stroke-[1.5]" />
                   </a>
